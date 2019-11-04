@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*- 
 from ctypes import *
-import sys
+import sys, os
 import platform
 try:
+    abs_path = os.path.dirname(os.path.abspath(__file__))
     if platform.system() == "Windows":
-        _lib = cdll.LoadLibrary("arducam_config_parser.dll")
+        lib_name = "arducam_config_parser.dll"
     elif platform.system() == "Linux":
-        _lib = cdll.LoadLibrary("libarducam_config_parser.so")
+        lib_name = "libarducam_config_parser.so"
+    
+    abs_lib_name = os.path.join(abs_path, lib_name)
+    if os.path.exists(abs_lib_name):
+        _lib = cdll.LoadLibrary(abs_lib_name)
+    else:
+        _lib = cdll.LoadLibrary(lib_name)
 except Exception as e:
     print("Load libarducam_config_parser fail.")
+    print("Make sure you have arducam_config_parser installed.")
+    print("For more information, please visit: https://github.com/ArduCAM/arducam_config_parser")
     print(e)
     sys.exit(0)
 
@@ -71,6 +80,10 @@ parse.argtypes = [c_char_p, POINTER(CameraConfigs)]
 
 def LoadConfigFile(name):
     cfgs = CameraConfigs()
-    if parse(name.encode('utf-8'), byref(cfgs)) != 0:
+    if sys.version_info[0] == 3:
+        filename = name.encode('utf-8')
+    else:
+        filename = name
+    if parse(filename, byref(cfgs)) != 0:
         raise RuntimeError("Loading configuration file {} failed.".format(name))
     return cfgs
