@@ -42,7 +42,7 @@ static uint32_t parse_number(const char* value){
             continue;
         }
     }
-    if(*temp == '0' && *(temp + 1) == 'x')
+    if(*temp == '0' && (*(temp + 1) == 'x' || *(temp + 1) == 'X'))
         return strtol(value, NULL, 16);
     else
         return strtol(value, NULL, 10);
