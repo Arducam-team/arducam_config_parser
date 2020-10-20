@@ -18,6 +18,8 @@ https://github.com/benhoyt/inih
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <strings.h>
+#include <stdlib.h>
 
 #include "ini.h"
 
@@ -184,6 +186,37 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                 /* No ']' found on section line */
                 error = lineno;
             }
+        }
+        else if (!strcasecmp(start, "======CODE_BLOCK_START======")){
+            int code_block_size = 100;
+            int current_size = 0;
+            int found_end = 0;
+            char *code_block = malloc(code_block_size);
+            code_block[0] = '\0';
+            while (reader(line, max_line, stream) != NULL) {
+                lineno++;
+
+                start = line;
+                start = lskip(rstrip(start));
+
+                if (*start == '[' && *find_chars_or_comment(start + 1, "]") == ']')
+                    break;
+
+                if (!strcasecmp(start, "======CODE_BLOCK_END======")) {
+                    found_end = 1;
+                    break;
+                }
+                current_size += strlen(line) + 3;
+                if (current_size > code_block_size) {
+                    code_block_size = current_size + 100;
+                    code_block = realloc(code_block, code_block_size);
+                }
+                strcat(code_block, line);
+                strcat(code_block, "\n");
+            }
+            if (!found_end || (!HANDLER(user, section, NULL, code_block) && !error))
+                error = lineno;
+            free(code_block);
         }
         else if (*start) {
             /* Not a comment, must be a name[=:]value pair */

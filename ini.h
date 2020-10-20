@@ -140,7 +140,7 @@ int ini_parse_string(const char* string, ini_handler handler, void* user);
    name and value NULL). Default is to only call the handler on
    each name=value pair. */
 #ifndef INI_CALL_HANDLER_ON_NEW_SECTION
-#define INI_CALL_HANDLER_ON_NEW_SECTION 0
+#define INI_CALL_HANDLER_ON_NEW_SECTION 1
 #endif
 
 #ifdef __cplusplus

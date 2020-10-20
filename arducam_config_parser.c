@@ -11,6 +11,7 @@
 
 TypeMap section_types[] = {
     {"camera parameter", SECTION_TYPE_CAMERA},
+    {"control parameter", SECTION_TYPE_CONTROL},
     {"board parameter", SECTION_TYPE_BOARD},
     {"board parameter||dev2", SECTION_TYPE_BOARD_2},
     {"board parameter||dev3||inf2", SECTION_TYPE_BOARD_3_2},
@@ -25,6 +26,16 @@ TypeMap config_types[] = {
     {"REG", CONFIG_TYPE_REG},
     {"DELAY", CONFIG_TYPE_DELAY},
     {"VRCMD", CONFIG_TYPE_VRCMD},
+    {0, 0},
+};
+
+TypeMap control_types[] = {
+    {"MIN_VALUE", CONTROL_TYPE_MIN},
+    {"MAX_VALUE", CONTROL_TYPE_MAX},
+    {"STEP", CONTROL_TYPE_STEP},
+    {"DEF", CONTROL_TYPE_DEF},
+    {"CTRL_NAME", CONTROL_TYPE_NAME},
+    {"FUNC_NAME", CONTROL_TYPE_FUNC},
     {0, 0},
 };
 
@@ -46,6 +57,22 @@ static uint32_t parse_number(const char* value){
         return strtol(value, NULL, 16);
     else
         return strtol(value, NULL, 10);
+}
+
+static int64_t parse_numberll(const char* value){
+    const char *temp = value;
+    for(int i = 0 ; i < strlen(value);i++){
+        if(isspace((unsigned char)*temp)){
+            temp++;
+            continue;
+        }
+    }
+    if (strlen(temp) <= 2)
+        return strtoll(value, NULL, 10);
+    if(*temp == '0' && (*(temp + 1) == 'x' || *(temp + 1) == 'X'))
+        return strtoll(value, NULL, 16);
+    else
+        return strtoll(value, NULL, 10);
 }
 
 static void parse_params(Config *config, const char *src){
@@ -92,6 +119,40 @@ static void parse_camera_parameter(CameraParam *camera_param, const char *name, 
     }
 }
 
+static void parse_control_parameter(
+        Control *ctrl, const char *name, const char *value ) {
+    if (name == NULL) {
+        ctrl->code = malloc(strlen(value) + 1);
+        ctrl->code[0] = '\0';
+        strcpy(ctrl->code, value);
+        return;
+    }
+
+    switch (get_type(control_types, name))
+    {
+    case CONTROL_TYPE_MIN:
+        ctrl->min = parse_numberll(value);
+        break;
+    case CONTROL_TYPE_MAX:
+        ctrl->max = parse_numberll(value);
+        break;
+    case CONTROL_TYPE_STEP:
+        ctrl->step = parse_numberll(value);
+        break;
+    case CONTROL_TYPE_DEF:
+        ctrl->def = parse_numberll(value);
+        break;
+    case CONTROL_TYPE_NAME:
+        strncpy(ctrl->name, value, 127);
+        break;
+    case CONTROL_TYPE_FUNC:
+        strncpy(ctrl->func, value, 127);
+        break;
+    default:
+        break;
+    }
+}
+
 
 static int parser_handle(void* user, const char* section, const char* name,
                   const char* value)
@@ -103,8 +164,27 @@ static int parser_handle(void* user, const char* section, const char* name,
     if(!(section_type = get_type(section_types, section)))
         return 1;
 
+    if (name == NULL && value == NULL) {
+        if (section_type == SECTION_TYPE_CONTROL) {
+            if (configs->controls_length == 0 && configs->controls == NULL) {
+                configs->controls_length = 1;
+                configs->controls =
+                    malloc(sizeof(Control) * configs->controls_length);
+            } else {
+                configs->controls_length++;
+                configs->controls = realloc(configs->controls, 
+                    sizeof(Control) * configs->controls_length);
+            }
+        }
+        return 1;
+    }
+
     if(section_type == SECTION_TYPE_CAMERA){
         parse_camera_parameter(&configs->camera_param, name, value);
+    }else if (section_type == SECTION_TYPE_CONTROL){
+        parse_control_parameter(
+            &configs->controls[configs->controls_length - 1], name, value);
+
     }else if((config_type = get_type(config_types, name))){
         Config *config = &configs->configs[configs->configs_length++];
         config->type = section_type | config_type;
@@ -124,6 +204,18 @@ void dump_camera_parameter(CameraParam *camera_param){
     LOG("I2C_MODE : %d", camera_param->i2c_mode);
     LOG("I2C_ADDR : %d", camera_param->i2c_addr);
     LOG("TRANS_LVL: %d", camera_param->trans_lvl);
+}
+
+void dump_controls(CameraConfigs configs) {
+    for (int i = 0; i < configs.controls_length; i++) {
+        LOG("MIN_VALUE  = %ld", configs.controls[i].min);
+        LOG("MAX_VALUE  = %ld", configs.controls[i].max);
+        LOG("STEP       = %d", configs.controls[i].step);
+        LOG("DEF        = %ld", configs.controls[i].def);
+        LOG("CTRL_NAME	= %s", configs.controls[i].name);
+        LOG("FUNC_NAME	= %s", configs.controls[i].func);
+        LOG("%s", configs.controls[i].code);
+    }
 }
 
 void dump_configs(CameraConfigs *configs){
