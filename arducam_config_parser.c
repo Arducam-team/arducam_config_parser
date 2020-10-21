@@ -186,7 +186,15 @@ static int parser_handle(void* user, const char* section, const char* name,
             &configs->controls[configs->controls_length - 1], name, value);
 
     }else if((config_type = get_type(config_types, name))){
-        Config *config = &configs->configs[configs->configs_length++];
+        configs->configs_length++;
+        if (configs->configs_length == 1) {
+            configs->configs = malloc(sizeof(Config));
+        } else {
+            configs->configs = realloc(configs->configs, 
+                                    sizeof(Config) * configs->configs_length);
+        }
+
+        Config *config = &configs->configs[configs->configs_length - 1];
         config->type = section_type | config_type;
         parse_params(config, value);
     }

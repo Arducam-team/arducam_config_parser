@@ -103,7 +103,7 @@ typedef struct {
 
 typedef struct {
     CameraParam camera_param;
-    Config configs[MAX_CONFIGS];
+    Config *configs;
     uint32_t configs_length;
     Control *controls;
     uint32_t controls_length;

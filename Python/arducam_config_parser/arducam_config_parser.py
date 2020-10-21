@@ -82,7 +82,7 @@ class CameraParam(Structure):
 class CameraConfigs(Structure):
     _fields_ = [
         ("camera_param", CameraParam),
-        ("configs", Config * MAX_CONFIGS),
+        ("configs", POINTER(Config)),
         ("configs_length", c_uint32),
         ("controls", POINTER(Control)),
         ("controls_length", c_uint32),
