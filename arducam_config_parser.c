@@ -188,10 +188,11 @@ static int parser_handle(void* user, const char* section, const char* name,
     }else if((config_type = get_type(config_types, name))){
         configs->configs_length++;
         if (configs->configs_length == 1) {
-            configs->configs = malloc(sizeof(Config));
-        } else {
-            configs->configs = realloc(configs->configs, 
-                                    sizeof(Config) * configs->configs_length);
+            configs->configs = malloc(sizeof(Config) * 100);
+        } else if (configs->configs_length % 100 == 0){
+            configs->configs = 
+                realloc(configs->configs, 
+                        sizeof(Config) * (configs->configs_length + 100));
         }
 
         Config *config = &configs->configs[configs->configs_length - 1];
