@@ -15,10 +15,18 @@ https://github.com/benhoyt/inih
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#if defined(_MSC_VER)
+//not #if defined(_WIN32) || defined(_WIN64) because we have strncasecmp in mingw
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#endif
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#if !defined(_MSC_VER)
 #include <strings.h>
+#endif
 #include <stdlib.h>
 
 #include "ini.h"
