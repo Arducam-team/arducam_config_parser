@@ -72,6 +72,8 @@ typedef struct {
     int type;
 } TypeMap;
 
+#if !defined(__ARDUCAM_STRUCT_CONTROL__)
+#define __ARDUCAM_STRUCT_CONTROL__
 typedef struct {
     int64_t min;
     int64_t max;
@@ -82,6 +84,7 @@ typedef struct {
     char func[128];
     char *code;
 } Control;
+#endif
 
 typedef struct {
     uint32_t type;
