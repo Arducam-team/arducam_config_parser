@@ -1,5 +1,6 @@
-CXX		= g++
-CC		= gcc
+CROSS_COMPILE ?=
+CXX		= $(CROSS_COMPILE)g++
+CC		= $(CROSS_COMPILE)gcc
 CXXFLAGS	= -Wall -O2 -std=c++0x -fPIC -I.
 CFLAGS		= -Wall -O2 -std=c99 -fPIC  -I. -fvisibility=hidden -DARDUCAM_DLL -DARDUCAM_DLL_EXPORTS
 ODIR		= ../obj
