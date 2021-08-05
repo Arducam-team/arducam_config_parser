@@ -110,7 +110,7 @@ parse.argtypes = [c_char_p, POINTER(CameraConfigs)]
 def LoadConfigFile(name):
     cfgs = CameraConfigs()
     if sys.version_info[0] == 3:
-        filename = name.encode("utf-8")
+        filename = name.encode('gbk') if platform.system() == "Windows" else name.encode('utf-8')
     else:
         filename = name
     if parse(filename, byref(cfgs)) != 0:
