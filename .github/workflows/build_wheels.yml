@@ -41,49 +41,49 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: build armv6 so
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: git clone https://github.com/759401524/cross-pi-gcc-10.2.0.git
-          && export PATH=$PATH:$(pwd)/cross-pi-gcc-10.2.0/bin
-          && cd src
-          && make clean
-          && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-          && mv ../bin/*.so ../Python/arducam_config_parser/
+#       - name: build armv6 so
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: git clone https://github.com/759401524/cross-pi-gcc-10.2.0.git
+#           && export PATH=$PATH:$(pwd)/cross-pi-gcc-10.2.0/bin
+#           && cd src
+#           && make clean
+#           && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+#           && mv ../bin/*.so ../Python/arducam_config_parser/
 
-      - name: build armv6 whl
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel -p linux_armv6l --universal -d ./wheelhouse
+#       - name: build armv6 whl
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: cd Python
+#           && python setup.py bdist_wheel -p linux_armv6l --universal -d ./wheelhouse
 
-      - name: build armv7 so
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd cross-pi-gcc-10.2.0
-          && git checkout origin/armv7
-          && export PATH=$PATH:$(pwd)/bin
-          && cd ../src
-          && make clean
-          && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-          && mv ../bin/*.so ../Python/arducam_config_parser/
+#       - name: build armv7 so
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: cd cross-pi-gcc-10.2.0
+#           && git checkout origin/armv7
+#           && export PATH=$PATH:$(pwd)/bin
+#           && cd ../src
+#           && make clean
+#           && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+#           && mv ../bin/*.so ../Python/arducam_config_parser/
 
-      - name: build armv7 whl
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel -p linux_armv7l --universal  -d ./wheelhouse
+#       - name: build armv7 whl
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: cd Python
+#           && python setup.py bdist_wheel -p linux_armv7l --universal  -d ./wheelhouse
 
-      - name: build armv8 so
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd cross-pi-gcc-10.2.0
-          && git checkout origin/aarch64
-          && export PATH=$PATH:$(pwd)/bin
-          && cd ../src
-          && make clean
-          && make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu-
-          && mv ../bin/*.so ../Python/arducam_config_parser/
+#       - name: build armv8 so
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: cd cross-pi-gcc-10.2.0
+#           && git checkout origin/aarch64
+#           && export PATH=$PATH:$(pwd)/bin
+#           && cd ../src
+#           && make clean
+#           && make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu-
+#           && mv ../bin/*.so ../Python/arducam_config_parser/
 
-      - name: build armv8 whl
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel -p manylinux2014_aarch64 --universal  -d ./wheelhouse
+#       - name: build armv8 whl
+#         if: ${{ matrix.os == 'ubuntu-latest' }}
+#         run: cd Python
+#           && python setup.py bdist_wheel -p manylinux2014_aarch64 --universal  -d ./wheelhouse
           
       - name: build x86_64 so
         if: ${{ matrix.os == 'ubuntu-latest' }}
