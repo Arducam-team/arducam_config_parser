@@ -87,7 +87,7 @@ jobs:
           
       - name: build x86_64 so
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd ../src
+        run: cd src
           && make clean
           && make 
           && mv ../bin/*.so ../Python/arducam_config_parser/
