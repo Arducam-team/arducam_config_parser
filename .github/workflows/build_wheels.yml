@@ -70,6 +70,11 @@ jobs:
         run: cd Python
           && python setup.py bdist_wheel -p linux_armv7l --universal  -d ./wheelhouse
 
+      - name: Build x86_64 wheel
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: cd Python
+          && python setup.py bdist_wheel --universal -p manylinux2014_x86_64 -d ./wheelhouse
+
       - name: build armv8 so
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: cd cross-pi-gcc-10.2.0
@@ -84,11 +89,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: cd Python
           && python setup.py bdist_wheel -p manylinux2014_aarch64 --universal  -d ./wheelhouse
-
-      - name: Build x86_64 wheel
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel --universal -p manylinux2014_x86_64 -d ./wheelhouse
 
       - name: Build x86 dll
         if: ${{ matrix.os == 'windows-latest' }}
