@@ -48,7 +48,7 @@ jobs:
           && cd src
           && make clean
           && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-          && cp ../bin/*.so ../Python/arducam_config_parser/
+          && mv ../bin/*.so ../Python/arducam_config_parser/
 
       - name: build armv6 whl
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -63,7 +63,7 @@ jobs:
           && cd ../src
           && make clean
           && make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-          && cp ../bin/*.so ../Python/arducam_config_parser/
+          && mv ../bin/*.so ../Python/arducam_config_parser/
 
       - name: build armv7 whl
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -78,7 +78,7 @@ jobs:
           && cd ../src
           && make clean
           && make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu-
-          && cp ../bin/*.so ../Python/arducam_config_parser/
+          && mv ../bin/*.so ../Python/arducam_config_parser/
 
       - name: build armv8 whl
         if: ${{ matrix.os == 'ubuntu-latest' }}
