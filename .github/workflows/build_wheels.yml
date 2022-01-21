@@ -28,7 +28,7 @@ jobs:
       - run: cp -r src Python/src
           && cp -r msvc Python/msvc
           && cp README.md Python/
-          
+
       - uses: actions/setup-python@v2
       - name: setup python env
         run: python -m pip install -U wheel setuptools
@@ -40,6 +40,40 @@ jobs:
       - name: Add MSBuild to PATH
         if: ${{ matrix.os == 'windows-latest' }}
         uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: build x86_64 so
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: cd src
+          && make clean
+          && make 
+          && cp ../bin/*.so ../Python/arducam_config_parser/
+
+      - name: Build x86_64 wheel
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: cd Python
+          && python setup.py bdist_wheel --universal -p manylinux2014_x86_64 -d ./wheelhouse
+
+      - name: Build x86 dll
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cd msvc
+          && msbuild arducam_config_parser.sln /m /t:Rebuild /p:Configuration=Release /p:Platform=x86
+          && cp ../bin/win32/Release/*.dll ../Python/arducam_config_parser/
+
+      - name: Build x86 wheels
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cd Python
+          && python setup.py bdist_wheel --universal -p win32 -d ./wheelhouse
+
+      - name: Build x64 dll
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cd msvc
+          && msbuild arducam_config_parser.sln /m /t:Rebuild /p:Configuration=Release /p:Platform=x64
+          && cp ../bin/x64/Release/*.dll ../Python/arducam_config_parser/
+
+      - name: Build x64 wheels
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cd Python
+          && python setup.py bdist_wheel --universal -p win_amd64 -d ./wheelhouse
 
       - name: build armv6 so
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -84,33 +118,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: cd Python
           && python setup.py bdist_wheel -p manylinux2014_aarch64 --universal  -d ./wheelhouse
-
-      - name: Build x86_64 wheel
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel --universal -p manylinux2014_x86_64 -d ./wheelhouse
-
-      - name: Build x86 dll
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: cd msvc
-          && msbuild arducam_config_parser.sln /m /t:Rebuild /p:Configuration=Release /p:Platform=x86
-          && cp ../bin/win32/Release/*.dll ../Python/arducam_config_parser/
-
-      - name: Build x86 wheels
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel --universal -p win32 -d ./wheelhouse
-
-      - name: Build x64 dll
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: cd msvc
-          && msbuild arducam_config_parser.sln /m /t:Rebuild /p:Configuration=Release /p:Platform=x64
-          && cp ../bin/x64/Release/*.dll ../Python/arducam_config_parser/
-
-      - name: Build  x64 wheels
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: cd Python
-          && python setup.py bdist_wheel --universal -p win_amd64 -d ./wheelhouse
 
       - name: Archive wheel artifacts
         uses: actions/upload-artifact@v2

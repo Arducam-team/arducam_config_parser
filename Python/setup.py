@@ -36,7 +36,7 @@ class Build(build_ext):
 
 setup_kwargs = {
     "name": "arducam_config_parser",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "arducam_config_parser is a python wrapper for dynamic libraries. ",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",  # This is important!
